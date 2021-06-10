@@ -1,7 +1,18 @@
+# editors
+
+.idea/
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# python
+*.pyc
+*.pyd
+*.pyo
+__pycache__/
 
 # C extensions
 *.so
