@@ -52,13 +52,6 @@ config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True
 config.read(f"/etc/opt/{APP_NAME}/config.ini")
 
 
-rabbit_ip = config.get("RABBITMQ", "ip")
-rabbit_port = config.getint("RABBITMQ", "port")
-rabbit_vhost = config.get("RABBITMQ", "vhost")
-rabbit_user = config.get("RABBITMQ", "user")
-rabbit_passw = config.get("RABBITMQ", "password")
-
-
 class Greeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
@@ -88,6 +81,12 @@ def send_intent():
     return "New intent has been published"
 
 def publish(exchange):
+    rabbit_ip = config.get("RABBITMQ", "ip")
+    rabbit_port = config.getint("RABBITMQ", "port")
+    rabbit_vhost = config.get("RABBITMQ", "vhost")
+    rabbit_user = config.get("RABBITMQ", "user")
+    rabbit_passw = config.get("RABBITMQ", "password")
+
     body = json.dumps(intent_example)
 
     conn = BrokerConnection(hostname=rabbit_ip, 

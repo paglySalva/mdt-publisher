@@ -1,3 +1,5 @@
 import mdt_publisher
+from mdt_publisher import db
 
-mdt_publisher.db.create_all()
+db.create_all()
+# mdt_publisher.db.create_all()
