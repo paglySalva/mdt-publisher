@@ -52,7 +52,7 @@ def send_intent():
     publish("intents")
     return "New intent has been published"
 
-def publish(exchange):
+def publish(exchange_name):
     # Config file
     config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
     config.read(f"/etc/opt/{APP_NAME}/config.ini")
@@ -72,8 +72,8 @@ def publish(exchange):
                             virtual_host=rabbit_vhost, 
                             heartbeat=4)
     channel = conn.channel()
-    exchange = Exchange(exchange, type='topic', durable=False)
-    producer = Producer(exchange=exchange, channel=channel, routing_key=f'{exchange}.#')
+    exchange = Exchange(exchange_name, type='topic', durable=False)
+    producer = Producer(exchange=exchange, channel=channel, routing_key=f'{exchange_name}.{APP_NAME}')
     producer.publish(body)
 
 if __name__ == '__main__':
