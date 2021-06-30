@@ -25,33 +25,6 @@ db = SQLAlchemy(app)
 
 APP_NAME = "mdt-publisher"
 
-here = os.path.dirname(os.path.abspath(__file__))
-
-# Creating app folder
-if not os.path.exists(f"/etc/opt/{APP_NAME}/"):
-    os.mkdir(f'/etc/opt/{APP_NAME}/')
-
-# Copy default logging configuration file
-if not os.path.isfile(f"/etc/opt/{APP_NAME}/logconfig.ini"):
-    shutil.copy(here + "/config/logconfig.ini", f'/etc/opt/{APP_NAME}/')
-
-# Copy default configuration file
-if not os.path.isfile(f"/etc/opt/{APP_NAME}/config.ini"):
-    shutil.copy(here + "/config/config.ini", f'/etc/opt/{APP_NAME}/')
-
-# Creating logs folder
-if not os.path.exists(f"/var/log/{APP_NAME}/"):
-    os.mkdir(f'/var/log/{APP_NAME}/')
-
-# Logging config file
-logging.config.fileConfig(f"/etc/opt/{APP_NAME}/logconfig.ini")
-logger = logging.getLogger()
-
-# Config file
-config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
-config.read(f"/etc/opt/{APP_NAME}/config.ini")
-
-
 class Greeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime(timezone=True), default=func.now())
@@ -81,6 +54,10 @@ def send_intent():
     return "New intent has been published"
 
 def publish(exchange):
+    # Config file
+    config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
+    config.read(f"/etc/opt/{APP_NAME}/config.ini")
+
     rabbit_ip = config.get("RABBITMQ", "ip")
     rabbit_port = config.getint("RABBITMQ", "port")
     rabbit_vhost = config.get("RABBITMQ", "vhost")
@@ -101,6 +78,29 @@ def publish(exchange):
     producer.publish(body)
 
 if __name__ == '__main__':
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    # Creating app folder
+    if not os.path.exists(f"/etc/opt/{APP_NAME}/"):
+        os.mkdir(f'/etc/opt/{APP_NAME}/')
+
+    # Copy default logging configuration file
+    if not os.path.isfile(f"/etc/opt/{APP_NAME}/logconfig.ini"):
+        shutil.copy(here + "/config/logconfig.ini", f'/etc/opt/{APP_NAME}/')
+
+    # Copy default configuration file
+    if not os.path.isfile(f"/etc/opt/{APP_NAME}/config.ini"):
+        shutil.copy(here + "/config/config.ini", f'/etc/opt/{APP_NAME}/')
+
+    # Creating logs folder
+    if not os.path.exists(f"/var/log/{APP_NAME}/"):
+        os.mkdir(f'/var/log/{APP_NAME}/')
+
+    # Logging config file
+    global logger
+    logging.config.fileConfig(f"/etc/opt/{APP_NAME}/logconfig.ini")
+    logger = logging.getLogger()
+
     app.run()
 
 intent_example = \
