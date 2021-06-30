@@ -49,7 +49,6 @@ def hello_world():
 
 @app.route('/intent')
 def send_intent():
-    logger.info(f"Publishing intent")
     publish("intents")
     return "New intent has been published"
 
@@ -78,29 +77,6 @@ def publish(exchange):
     producer.publish(body)
 
 if __name__ == '__main__':
-    here = os.path.dirname(os.path.abspath(__file__))
-
-    # Creating app folder
-    if not os.path.exists(f"/etc/opt/{APP_NAME}/"):
-        os.mkdir(f'/etc/opt/{APP_NAME}/')
-
-    # Copy default logging configuration file
-    if not os.path.isfile(f"/etc/opt/{APP_NAME}/logconfig.ini"):
-        shutil.copy(here + "/config/logconfig.ini", f'/etc/opt/{APP_NAME}/')
-
-    # Copy default configuration file
-    if not os.path.isfile(f"/etc/opt/{APP_NAME}/config.ini"):
-        shutil.copy(here + "/config/config.ini", f'/etc/opt/{APP_NAME}/')
-
-    # Creating logs folder
-    if not os.path.exists(f"/var/log/{APP_NAME}/"):
-        os.mkdir(f'/var/log/{APP_NAME}/')
-
-    # Logging config file
-    global logger
-    logging.config.fileConfig(f"/etc/opt/{APP_NAME}/logconfig.ini")
-    logger = logging.getLogger()
-
     app.run()
 
 intent_example = \
